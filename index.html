@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>We Kids - Cartoon Fun Math</title>
+
+<style>
+
+body{
+    margin:0;
+    font-family: "Comic Sans MS", cursive;
+    text-align:center;
+    background: linear-gradient(45deg,#FFD6E8,#C1F0F6);
+    transition: background 0.5s;
+}
+
+.screen{
+    display:none;
+    padding-top:50px;
+}
+
+h1{
+    font-size:42px;
+    color:#FF4081;
+}
+
+button{
+    padding:20px 50px;
+    font-size:28px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    background:#FF9800;
+    color:white;
+    box-shadow:0 5px 0 #cc7a00;
+}
+
+button:active{
+    box-shadow:none;
+    transform:translateY(5px);
+}
+
+#question{
+    font-size:60px;
+    margin:30px;
+    animation:bounce 0.8s infinite alternate;
+}
+
+@keyframes bounce{
+    from{transform:translateY(0);}
+    to{transform:translateY(-10px);}
+}
+
+input{
+    width:180px;
+    height:80px;
+    font-size:50px;
+    text-align:center;
+    border-radius:20px;
+    border:4px solid #333;
+}
+
+#stars{
+    font-size:50px;
+    margin:20px;
+}
+
+.star{
+    color:#FFD700;
+}
+
+#counter{
+    font-size:22px;
+    margin-bottom:10px;
+}
+
+@media(max-width:600px){
+    button{
+        width:80%;
+        font-size:26px;
+    }
+
+    input{
+        width:70%;
+    }
+
+    #question{
+        font-size:50px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- START -->
+<div id="startScreen" class="screen" style="display:block;">
+    <h1>🌈 Welcome to We Kids Cartoon Math 🌈</h1>
+    <button onclick="startGame()">Start Game</button>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" class="screen">
+    <h1>Let's Play With Numbers! 🧸</h1>
+    <div id="stars"></div>
+    <div id="counter"></div>
+    <div id="question"></div>
+    <input type="number" id="answer" />
+    <br><br>
+    <button onclick="nextQuestion()">Next</button>
+</div>
+
+<!-- RESULT -->
+<div id="resultScreen" class="screen">
+    <h1 id="resultMessage"></h1>
+    <div id="finalStars"></div>
+    <button onclick="location.reload()">Play Again</button>
+</div>
+
+<script>
+
+let questions=[];
+let current=0;
+let correct=0;
+
+function startGame(){
+    document.getElementById("startScreen").style.display="none";
+    document.getElementById("gameScreen").style.display="block";
+    generateQuestions();
+    showQuestion();
+}
+
+function generateQuestions(){
+    for(let i=0;i<10;i++){
+        let a=Math.floor(Math.random()*6);
+        let b=Math.floor(Math.random()*6);
+        let op=Math.random()>0.5?"+":"-";
+
+        if(op=="-" && b>a){
+            let temp=a; a=b; b=temp;
+        }
+
+        let ans= op=="+" ? a+b : a-b;
+
+        questions.push({q:`${a} ${op} ${b}`, ans:ans});
+    }
+}
+
+function showQuestion(){
+    document.getElementById("counter").innerHTML=
+        "Question "+(current+1)+" of 10";
+
+    document.getElementById("question").innerHTML=
+        questions[current].q+" = ?";
+    
+    document.getElementById("answer").value="";
+    document.getElementById("answer").focus();
+    changeBackground();
+}
+
+function nextQuestion(){
+    let user=document.getElementById("answer").value;
+    if(user==="") return;
+
+    if(parseInt(user)===questions[current].ans){
+        correct++;
+    }
+
+    current++;
+
+    if(current<10){
+        showQuestion();
+    }else{
+        showResult();
+    }
+}
+
+function showResult(){
+    document.getElementById("gameScreen").style.display="none";
+    document.getElementById("resultScreen").style.display="block";
+
+    let mistakes=10-correct;
+
+    let starsEarned=3;
+
+    if(mistakes>=5) starsEarned=1;
+    else if(mistakes>=2) starsEarned=2;
+
+    let starHTML="";
+    for(let i=0;i<starsEarned;i++){
+        starHTML+="⭐";
+    }
+
+    document.getElementById("finalStars").innerHTML=
+        `<div style="font-size:60px">${starHTML}</div>`;
+
+    if(mistakes===0){
+        document.getElementById("resultMessage").innerHTML=
+        "🎉 Congratulations! All answers are correct! 🎉";
+    }else{
+        document.getElementById("resultMessage").innerHTML=
+        `You made ${mistakes} mistakes. Keep practicing and try again!`;
+    }
+}
+
+function changeBackground(){
+    const colors=[
+        "#FFD6E8","#FEC8D8","#D5AAFF",
+        "#A0E7E5","#B4F8C8","#FBE7C6",
+        "#FFAEBC","#A0C4FF","#CDB4DB"
+    ];
+    document.body.style.background=
+        colors[Math.floor(Math.random()*colors.length)];
+}
+
+</script>
+
+</body>
+</html>
